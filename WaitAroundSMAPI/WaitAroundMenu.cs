@@ -21,17 +21,9 @@ namespace WaitAroundSMAPI
             this.Mod = mod;
             this.Buttons = new List<MenuButton>();
 
-            Texture2D mouseCursors = Game1.mouseCursors;
-
-            if (mouseCursors == null)
-            {
-                Console.WriteLine("MouseCursors is null, abadon ship!");
-                return;
-            }
-
-            Texture2D upArrowTex = getTextureFromTileSheet(mouseCursors, 12, 64, 64);
-            Texture2D downArrowTex = getTextureFromTileSheet(mouseCursors, 11, 64, 64);
-            Texture2D okButtonTex = getTextureFromTileSheet(mouseCursors, 46, 64, 64);
+            Texture2D upArrowTex = getTextureFromTileSheet(Game1.mouseCursors, 12, 64, 64);
+            Texture2D downArrowTex = getTextureFromTileSheet(Game1.mouseCursors, 11, 64, 64);
+            Texture2D okButtonTex = getTextureFromTileSheet(Game1.mouseCursors, 46, 64, 64);
 
             Buttons.Add(new MenuButton(64, 64, 0, -1 * ((64 + 10 + 64 + 10 + 64) / 2), new Vector2(-0.25f, 0.5f), this.MenuRect, upArrowTex, upButton));
             Buttons.Add(new MenuButton(64, 64, 0, (-1 * ((64 + 10 + 64 + 10 + 64) / 2)) + 64 + 10, new Vector2(-0.25f, 0.5f), this.MenuRect, downArrowTex, downButton));
@@ -60,7 +52,6 @@ namespace WaitAroundSMAPI
 
         private void enterButton(MenuButton menuButton)
         {
-            //Game1.TimeOfDay = WaitAround.getTimeFromOffset(Game1.TimeOfDay, Mod.timeToWait);
             if (Mod.timeToWait > 0)
             {
                 this.reloadMap();
@@ -92,19 +83,25 @@ namespace WaitAroundSMAPI
 
         public override void draw(SpriteBatch b)
         {
-            SpriteBatch b2 = new SpriteBatch(b.GraphicsDevice);
-            b2.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, (DepthStencilState)null, (RasterizerState)null);
-            MenuRect = drawBaseMenu(b2, 450, 300, 550, 300);
+            //Draw menu background
+            MenuRect = drawBaseMenu(b, 450, 300, 550, 300);
+
+            //Draw buttons
             foreach (MenuButton button in Buttons)
             {
-                button.Draw(b2, MenuRect);
+                button.Draw(b, MenuRect);
             }
+
+            //Draw title
             String titleString = "How long do you want to wait?";
-            b2.DrawString(Game1.dialogueFont, titleString, new Vector2(MenuRect.X + (MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(titleString).X / 2), MenuRect.Y + 15), Color.Black);
+            b.DrawString(Game1.dialogueFont, titleString, new Vector2(MenuRect.X + (MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(titleString).X / 2), MenuRect.Y + 15), Color.Black);
+
+            //Draw time
             String timeString = String.Format("{0:00}:{1:00}", Math.Floor(Mod.timeToWait / 60.0), Mod.timeToWait % 60);
-            b2.DrawString(Game1.dialogueFont, timeString, new Vector2((MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(timeString).X) + MenuRect.X, (MenuRect.Height / 2) - (Game1.dialogueFont.MeasureString(timeString).Y) + MenuRect.Y), Color.Black, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, 0.0f);
-            b2.Draw(Game1.mouseCursors, new Vector2(Game1.oldMouseState.X, Game1.oldMouseState.Y), StardewValley.Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 0, 16, 16), Color.White, 0.0f, Vector2.Zero, Game1.pixelZoom + (Game1.dialogueButtonScale / 150), SpriteEffects.None, 0f);
-            b2.End();
+            b.DrawString(Game1.dialogueFont, timeString, new Vector2((MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(timeString).X) + MenuRect.X, (MenuRect.Height / 2) - (Game1.dialogueFont.MeasureString(timeString).Y) + MenuRect.Y), Color.Black, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, 0.0f);
+
+            //Draw mouse
+            b.Draw(Game1.mouseCursors, new Vector2(Game1.oldMouseState.X, Game1.oldMouseState.Y), StardewValley.Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 0, 16, 16), Color.White, 0.0f, Vector2.Zero, Game1.pixelZoom + (Game1.dialogueButtonScale / 150), SpriteEffects.None, 0f);
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)

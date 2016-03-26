@@ -35,11 +35,12 @@ namespace WaitAroundSMAPI
         }
         private Keys menuKey { get; set; }
         private WaitAroundMenu waitMenu { get; set; }
+        private WaitAroundConfig config { get; set; }
 
         public override void Entry(params object[] objects)
         {
-            //menuKey = (Keys)Enum.Parse(typeof(Keys), ModConfig.menuKey.ToUpper());
-            menuKey = Keys.K;
+            config = new WaitAroundConfig().LoadConfig<WaitAroundConfig>();
+            menuKey = (Keys)Enum.Parse(typeof(Keys), config.menuKey.ToUpper());
             KeyboardInput.KeyDown += KeyPressed;
         }
 

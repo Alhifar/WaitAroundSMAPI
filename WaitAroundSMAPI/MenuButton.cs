@@ -7,8 +7,6 @@ namespace WaitAroundSMAPI
 {
     class MenuButton
     {
-        private static int highestID = 0;
-        public int id { get; private set; }
         public Action<MenuButton> callbackFunction { set; get; }
         public Dictionary<String, String> callbackArgs;
         public Texture2D buttonTex { set; get; }
@@ -19,9 +17,6 @@ namespace WaitAroundSMAPI
 
         public MenuButton(int width, int height, int x, int y, Vector2 parentMenuFactor, Rectangle parentMenu, Texture2D buttonTex, Action<MenuButton> callbackFunction)
         {
-            this.id = highestID + 1;
-            highestID = id;
-
             this.relativeX = x;
             this.relativeY = y;
             this.parentMenuFactor = parentMenuFactor;
