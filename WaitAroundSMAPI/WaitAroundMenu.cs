@@ -1,12 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WaitAroundSMAPI
 {
@@ -14,30 +11,33 @@ namespace WaitAroundSMAPI
     {
         private WaitAroundMod Mod { get; set; }
         private Rectangle MenuRect { get; set; }
-        private List<MenuButton> Buttons { get; set; }
+        private readonly MenuButton[] Buttons;
 
         public WaitAroundMenu(WaitAroundMod mod)
         {
             this.Mod = mod;
-            this.Buttons = new List<MenuButton>();
-
-            Texture2D upArrowTex = getTextureFromTileSheet(Game1.mouseCursors, 12, 64, 64);
-            Texture2D downArrowTex = getTextureFromTileSheet(Game1.mouseCursors, 11, 64, 64);
-            Texture2D okButtonTex = getTextureFromTileSheet(Game1.mouseCursors, 46, 64, 64);
-
-            Buttons.Add(new MenuButton(64, 64, 0, -1 * ((64 + 10 + 64 + 10 + 64) / 2), new Vector2(-0.25f, 0.5f), this.MenuRect, upArrowTex, upButton));
-            Buttons.Add(new MenuButton(64, 64, 0, (-1 * ((64 + 10 + 64 + 10 + 64) / 2)) + 64 + 10, new Vector2(-0.25f, 0.5f), this.MenuRect, downArrowTex, downButton));
-            Buttons.Add(new MenuButton(64, 64, 0, (-1 * ((64 + 10 + 64 + 10 + 64) / 2)) + 64 + 10 + 64 + 10, new Vector2(-0.25f, 0.5f), this.MenuRect, okButtonTex, enterButton));
+            this.Buttons = new[]
+            {
+                this.GetMenuButton(name: "up", relativeX: 0, relativeY: -((64 + 10 + 64 + 10 + 64) / 2), spritePosition: 12, callback: this.upButton),
+                this.GetMenuButton(name: "down", relativeX: 0, relativeY: -((64 + 10 + 64 + 10 + 64) / 2) + 64 + 10, spritePosition: 11, callback: this.downButton),
+                this.GetMenuButton(name: "okay", relativeX: 0, relativeY: -((64 + 10 + 64 + 10 + 64) / 2) + 64 + 10 + 64 + 10, spritePosition: 46, callback: this.enterButton)
+            };
         }
 
-        public Texture2D getTextureFromTileSheet(Texture2D tileSheet, int tilePosition, int width, int height)
+        private MenuButton GetMenuButton(string name, int relativeX, int relativeY, int spritePosition, Action<MenuButton> callback)
         {
-            Rectangle sourceRectangle = Game1.getSourceRectForStandardTileSheet(tileSheet, tilePosition, width, height);
-            Texture2D newTexture = new Texture2D(Game1.graphics.GraphicsDevice, sourceRectangle.Width, sourceRectangle.Height);
-            Color[] data = new Color[sourceRectangle.Width * sourceRectangle.Height];
-            tileSheet.GetData(0, sourceRectangle, data, 0, data.Length);
-            newTexture.SetData(data);
-            return newTexture;
+            return new MenuButton(
+                name: name,
+                relativeX: relativeX,
+                relativeY: relativeY,
+                spriteWidth: 64,
+                spriteHeight: 64,
+                parentMenuFactor: new Vector2(-0.25f, 0.5f),
+                parentMenu: this.MenuRect,
+                spritesheet: Game1.mouseCursors,
+                spritePosition: spritePosition,
+                callback: callback
+            );
         }
 
         private void upButton(MenuButton menuButton)
@@ -101,31 +101,24 @@ namespace WaitAroundSMAPI
             b.DrawString(Game1.dialogueFont, timeString, new Vector2((MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(timeString).X) + MenuRect.X, (MenuRect.Height / 2) - (Game1.dialogueFont.MeasureString(timeString).Y) + MenuRect.Y), Color.Black, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, 0.0f);
 
             //Draw mouse
-            b.Draw(Game1.mouseCursors, new Vector2(Game1.oldMouseState.X, Game1.oldMouseState.Y), StardewValley.Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, 0, 16, 16), Color.White, 0.0f, Vector2.Zero, Game1.pixelZoom + (Game1.dialogueButtonScale / 150), SpriteEffects.None, 0f);
+            this.drawMouse(b);
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            Rectangle mouseRect = new Rectangle(x, y, 1, 1);
-
-            foreach (MenuButton button in Buttons)
+            foreach (MenuButton button in this.Buttons)
             {
-                if (mouseRect.Intersects(button.buttonRect))
-                {
-                    button.callbackFunction(button);
-                }
+                if (button.containsPoint(x, y))
+                    button.Callback(button);
             }
         }
 
-        public override void receiveRightClick(int x, int y, bool playSound = true)
-        {
-            return;
-        }
+        public override void receiveRightClick(int x, int y, bool playSound = true) { }
 
         //Borrowed from NPCLocations by Kemenor
         private Rectangle drawBaseMenu(SpriteBatch b, int leftRightPadding, int upperLowerPadding, int minWidth, int minHeight)
         {
-            Texture2D MenuTiles = Game1.content.Load<Texture2D>("MenuTiles");
+            Texture2D MenuTiles = Game1.content.Load<Texture2D>(Path.Combine("Maps", "MenuTiles"));
             var viewport = Game1.viewport;
             var textColor = Color.Black;
 
