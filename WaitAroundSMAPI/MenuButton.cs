@@ -1,54 +1,54 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewValley;
+using StardewValley.Menus;
 
 namespace WaitAroundSMAPI
 {
-    class MenuButton
+    internal class MenuButton : ClickableTextureComponent
     {
-        public Action<MenuButton> callbackFunction { set; get; }
-        public Dictionary<String, String> callbackArgs;
-        public Texture2D buttonTex { set; get; }
-        public int relativeX { set; get; }
-        public int relativeY { set; get; }
-        public Rectangle buttonRect { set; get; }
-        public Vector2 parentMenuFactor { set; get; }
+        public Action<MenuButton> Callback { set; get; }
+        public int RelativeX { set; get; }
+        public int RelativeY { set; get; }
+        public Vector2 ParentMenuFactor { set; get; }
 
-        public MenuButton(int width, int height, int x, int y, Vector2 parentMenuFactor, Rectangle parentMenu, Texture2D buttonTex, Action<MenuButton> callbackFunction)
+        public MenuButton(string name, int relativeX, int relativeY, int spriteWidth, int spriteHeight, Vector2 parentMenuFactor, Rectangle parentMenu, Texture2D spritesheet, int spritePosition, Action<MenuButton> callback)
+            : base(
+                name: name,
+                label: null,
+                hoverText: null,
+                bounds: new Rectangle(0, 0, spriteWidth, spriteHeight),
+                texture: spritesheet,
+                sourceRect: Game1.getSourceRectForStandardTileSheet(spritesheet, spritePosition, spriteWidth, spriteHeight),
+                scale: 1
+            )
         {
-            this.relativeX = x;
-            this.relativeY = y;
-            this.parentMenuFactor = parentMenuFactor;
+            this.RelativeX = relativeX;
+            this.RelativeY = relativeY;
+            this.ParentMenuFactor = parentMenuFactor;
+            this.Callback = callback;
 
-            this.buttonRect = new Rectangle(0, 0, width, height);
-            this.setAbsoluteButtonPosition(parentMenu);
-
-            this.buttonTex = buttonTex;
-
-            this.callbackFunction = callbackFunction;
-            this.callbackArgs = new Dictionary<String, String>();
+            this.SetAbsolutePosition(parentMenu);
         }
+
         public void Draw(SpriteBatch b, Rectangle parentMenu)
         {
-            this.setAbsoluteButtonPosition(parentMenu);
-            b.Draw(this.buttonTex, this.buttonRect, new Rectangle(0, 0, this.buttonTex.Width, this.buttonTex.Height), Color.White, 0f, Vector2.Zero, SpriteEffects.None, 1f);
+            this.SetAbsolutePosition(parentMenu);
+            base.draw(b);
         }
 
-        private void setAbsoluteButtonPosition(Rectangle parentMenu)
+        private void SetAbsolutePosition(Rectangle parentMenu)
         {
-            int finalButtonX = parentMenu.X + this.relativeX + (int)Math.Floor(parentMenu.Width * this.parentMenuFactor.X);
-            if (this.relativeX + (int)Math.Floor(parentMenu.Width * this.parentMenuFactor.X) < 0)
-            {
-                finalButtonX = parentMenu.X + parentMenu.Width + this.relativeX + (int)Math.Floor(parentMenu.Width * this.parentMenuFactor.X);
-            }
+            int x = parentMenu.X + this.RelativeX + (int)Math.Floor(parentMenu.Width * this.ParentMenuFactor.X);
+            if (this.RelativeX + (int)Math.Floor(parentMenu.Width * this.ParentMenuFactor.X) < 0)
+                x = parentMenu.X + parentMenu.Width + this.RelativeX + (int)Math.Floor(parentMenu.Width * this.ParentMenuFactor.X);
 
-            int finalButtonY = parentMenu.Y + this.relativeY + (int)Math.Floor(parentMenu.Height * this.parentMenuFactor.Y);
-            if (this.relativeY + (int)Math.Floor(parentMenu.Height * this.parentMenuFactor.Y) < 0)
-            {
-                finalButtonY = parentMenu.Y + parentMenu.Height + this.relativeY + (int)Math.Floor(parentMenu.Height * this.parentMenuFactor.Y);
-            }
-            this.buttonRect = new Rectangle(finalButtonX, finalButtonY, this.buttonRect.Width, this.buttonRect.Height);
+            int y = parentMenu.Y + this.RelativeY + (int)Math.Floor(parentMenu.Height * this.ParentMenuFactor.Y);
+            if (this.RelativeY + (int)Math.Floor(parentMenu.Height * this.ParentMenuFactor.Y) < 0)
+                y = parentMenu.Y + parentMenu.Height + this.RelativeY + (int)Math.Floor(parentMenu.Height * this.ParentMenuFactor.Y);
+
+            this.bounds = new Rectangle(x, y, this.bounds.Width, this.bounds.Height);
         }
 
     }

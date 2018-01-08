@@ -1,15 +1,10 @@
-﻿using Microsoft.Xna.Framework.Input;
-using StardewModdingAPI;
+﻿using StardewModdingAPI;
 using StardewValley;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using StardewModdingAPI.Events;
 
 namespace WaitAroundSMAPI
 {
-    public class WaitAroundMod : Mod
+    internal class WaitAroundMod : Mod
     {
         private static int LatestTime = 2550;
         private int _timeToWait;
@@ -33,33 +28,23 @@ namespace WaitAroundSMAPI
                 }
             }
         }
-        private Keys menuKey { get; set; }
         private WaitAroundMenu waitMenu { get; set; }
         private WaitAroundConfig config { get; set; }
 
-        public override void Entry(params object[] objects)
+        public override void Entry(IModHelper helper)
         {
-            config = new WaitAroundConfig().LoadConfig<WaitAroundConfig>();
-            menuKey = (Keys)Enum.Parse(typeof(Keys), config.menuKey.ToUpper());
-            KeyboardInput.KeyDown += KeyPressed;
+            config = helper.ReadConfig<WaitAroundConfig>();
+            InputEvents.ButtonPressed += KeyPressed;
         }
 
-        public void KeyPressed(object sender, KeyEventArgs e)
+        public void KeyPressed(object sender, EventArgsInput e)
         {
-            if (e.KeyCode.Equals(menuKey) && Game1.hasLoadedGame)
+            if (e.Button == config.menuKey && Context.IsWorldReady)
             {
-                if (Game1.activeClickableMenu == null)
-                {
-                    // this will bug animation frames if you don't prevent it
-                    if (!Game1.player.usingTool)
-                    {
-                        Game1.activeClickableMenu = new WaitAroundMenu(this);
-                    }
-                }
+                if (Game1.activeClickableMenu == null && Context.IsPlayerFree)
+                    Game1.activeClickableMenu = new WaitAroundMenu(this);
                 else if(Game1.activeClickableMenu is WaitAroundMenu)
-                {
                     ((WaitAroundMenu)Game1.activeClickableMenu).Close();
-                }
             }
         }
 
