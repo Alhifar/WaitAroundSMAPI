@@ -6,5 +6,5 @@
   "UniqueID": "Alhifar.WaitAround",
   "EntryDll": "WaitAroundSMAPI.dll",
   "MinimumApiVersion": "2.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "GitHub:Alhifar/WaitAroundSMAPI" ]
 }
