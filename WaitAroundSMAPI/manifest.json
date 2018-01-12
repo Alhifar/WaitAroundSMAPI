@@ -1,10 +1,10 @@
 {
   "Name": "WaitAround",
   "Author": "Alhifar",
-  "Version": "1.0.1",
+  "Version": "1.2.1",
   "Description": "Wait around for something to happen",
   "UniqueID": "Alhifar.WaitAround",
   "EntryDll": "WaitAroundSMAPI.dll",
   "MinimumApiVersion": "2.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "GitHub:Alhifar/WaitAroundSMAPI" ]
 }
