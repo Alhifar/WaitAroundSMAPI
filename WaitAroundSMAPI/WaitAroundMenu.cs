@@ -65,7 +65,7 @@ namespace WaitAroundSMAPI
 
         private void reloadMap()
         {
-            Game1.locationAfterWarp = Game1.currentLocation;
+            //Game1.locationAfterWarp = Game1.currentLocation;
             Game1.xLocationAfterWarp = (int)(Game1.player.Position.X / Game1.tileSize);
             Game1.yLocationAfterWarp = (int)(Game1.player.Position.Y / Game1.tileSize);
             Game1.facingDirectionAfterWarp = 2;
