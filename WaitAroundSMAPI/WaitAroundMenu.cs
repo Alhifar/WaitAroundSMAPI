@@ -7,7 +7,7 @@ using StardewValley.Menus;
 
 namespace WaitAroundSMAPI
 {
-    class WaitAroundMenu : IClickableMenu
+    internal class WaitAroundMenu : IClickableMenu
     {
         private WaitAroundMod Mod { get; set; }
         private Rectangle MenuRect { get; set; }
