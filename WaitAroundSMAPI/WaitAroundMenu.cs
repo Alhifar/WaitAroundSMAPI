@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewValley;
 using StardewValley.Menus;
+using StardewModdingAPI;
 
 namespace WaitAroundSMAPI
 {
@@ -40,14 +41,19 @@ namespace WaitAroundSMAPI
             );
         }
 
+        private bool isShiftPressed()
+        {
+            return this.Mod.Helper.Input.IsDown(SButton.LeftShift) || this.Mod.Helper.Input.IsDown(SButton.RightShift);
+        }
+
         private void upButton(MenuButton menuButton)
         {
-            Mod.timeToWait += 10;
+            Mod.timeToWait += this.isShiftPressed() ? 60 : 10;
         }
 
         private void downButton(MenuButton menuButton)
         {
-            Mod.timeToWait -= 10;
+            Mod.timeToWait -= this.isShiftPressed() ? 60 : 10;
         }
 
         private void enterButton(MenuButton menuButton)
