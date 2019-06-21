@@ -2,9 +2,9 @@
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
-using StardewModdingAPI;
 
 namespace WaitAroundSMAPI
 {
