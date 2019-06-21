@@ -13,6 +13,8 @@ namespace WaitAroundSMAPI
         private WaitAroundMod Mod { get; set; }
         private Rectangle MenuRect { get; set; }
         private readonly MenuButton[] Buttons;
+        private IInputHelper Input => this.Mod.Helper.Input;
+        private ITranslationHelper Translation => this.Mod.Helper.Translation;
 
         public WaitAroundMenu(WaitAroundMod mod)
         {
@@ -43,7 +45,7 @@ namespace WaitAroundSMAPI
 
         private bool isShiftPressed()
         {
-            return this.Mod.Helper.Input.IsDown(SButton.LeftShift) || this.Mod.Helper.Input.IsDown(SButton.RightShift);
+            return this.Input.IsDown(SButton.LeftShift) || this.Input.IsDown(SButton.RightShift);
         }
 
         private void upButton(MenuButton menuButton)
@@ -99,11 +101,11 @@ namespace WaitAroundSMAPI
             }
 
             //Draw title
-            String titleString = "How long do you want to wait?";
+            string titleString = this.Translation.Get("question");
             b.DrawString(Game1.dialogueFont, titleString, new Vector2(MenuRect.X + (MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(titleString).X / 2), MenuRect.Y + 15), Color.Black);
 
             //Draw time
-            String timeString = String.Format("{0:00}:{1:00}", Math.Floor(Mod.timeToWait / 60.0), Mod.timeToWait % 60);
+            string timeString = this.Translation.Get("time-format", new { hours = $"{Math.Floor(Mod.timeToWait / 60.0):00}", minutes = $"{Mod.timeToWait % 60:00}" });
             b.DrawString(Game1.dialogueFont, timeString, new Vector2((MenuRect.Width / 2) - (Game1.dialogueFont.MeasureString(timeString).X) + MenuRect.X, (MenuRect.Height / 2) - (Game1.dialogueFont.MeasureString(timeString).Y) + MenuRect.Y), Color.Black, 0f, Vector2.Zero, 2.0f, SpriteEffects.None, 0.0f);
 
             //Draw mouse
